@@ -10,13 +10,13 @@ function LogPain() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Hardcode a dummy userId for this example
       const userId = "1234567890abcdef";
-      const response = await axios.post('http://localhost:5000/api/painLogs', {
+      const response = await axios.post('http://localhost:5000/painLogs', {
         userId,
         location,
         intensity,
         notes,
+        date: new Date().toISOString()
       });
       console.log('Saved log:', response.data);
       alert('Pain log saved!');
