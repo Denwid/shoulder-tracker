@@ -60,8 +60,9 @@
             <div class="mb-6">
                 <div class="border-b border-gray-200 dark:border-gray-700">
                     <nav class="-mb-px flex space-x-6" aria-label="Tabs">
-                        <button id="entries-tab" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm tab-active">Entries</button>
-                        <button id="chart-tab" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-600">Chart</button>
+                        <button id="entries-tab" class="tab-btn px-3 py-2 text-sm font-medium rounded-t-md text-blue-600 border-b-2 border-blue-600 bg-white dark:bg-gray-800">Entries</button>
+                        <button id="chart-tab" class="tab-btn px-3 py-2 text-sm font-medium rounded-t-md text-gray-600 dark:text-gray-300 border-b-2 border-transparent bg-white dark:bg-gray-800">Chart</button>
+                        <button id="definitions-tab" class="tab-btn px-3 py-2 text-sm font-medium rounded-t-md text-gray-600 dark:text-gray-300 border-b-2 border-transparent bg-white dark:bg-gray-800">Definitions</button>
                     </nav>
                 </div>
             </div>
@@ -82,6 +83,26 @@
                         </div>
                         <canvas id="painChart"></canvas>
                         <div id="chart-empty-state" class="hidden text-center py-10"><p class="text-gray-500 dark:text-gray-400">Not enough data to display a chart.</p></div>
+                    </div>
+                </div>
+
+                <!-- Definitions View -->
+                <div id="definitions-view" class="hidden">
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+                        <h2 class="text-xl font-bold mb-4 text-blue-600 dark:text-blue-400">Pain Level Definitions</h2>
+                        <ul class="space-y-2 text-gray-700 dark:text-gray-200">
+                            <li><span class="font-bold">0</span> = gar kein Schmerz</li>
+                            <li><span class="font-bold">1</span> = Schmerz nur bei starkem dehnen</li>
+                            <li><span class="font-bold">2</span> = Schmerz nur bei gezielter Bewegung</li>
+                            <li><span class="font-bold">3</span> = Schmerz nur bei allgemeiner Bewegung</li>
+                            <li><span class="font-bold">4</span> = leichter dumpfer Schmerz (auch beim stillen stehen/sitzen)</li>
+                            <li><span class="font-bold">5</span> = leichter stechender Schmerz (auch beim stillen stehen/sitzen)</li>
+                            <li><span class="font-bold">6</span> = starker dumpfer Schmerz</li>
+                            <li><span class="font-bold">7</span> = starker stechender Schmerz</li>
+                            <li><span class="font-bold">8</span> = extrem starker Schmerz</li>
+                            <li><span class="font-bold">9</span> = nicht auszuhaltender Schmerz</li>
+                            <li><span class="font-bold">10</span> = Arm ab</li>
+                        </ul>
                     </div>
                 </div>
             </main>
@@ -153,8 +174,10 @@
         const entriesList = document.getElementById('entries-list');
         const entriesTab = document.getElementById('entries-tab');
         const chartTab = document.getElementById('chart-tab');
+        const definitionsTab = document.getElementById('definitions-tab');
         const entriesView = document.getElementById('entries-view');
         const chartView = document.getElementById('chart-view');
+        const definitionsView = document.getElementById('definitions-view');
         const chartCanvas = document.getElementById('painChart');
         const chartEmptyState = document.getElementById('chart-empty-state');
         const timeFilterButtons = document.querySelectorAll('.time-filter-btn');
@@ -168,14 +191,25 @@
             if (targetTab === 'chart') {
                 entriesView.classList.add('hidden');
                 chartView.classList.remove('hidden');
+                definitionsView.classList.add('hidden');
                 entriesTab.classList.remove('tab-active');
                 chartTab.classList.add('tab-active');
+                definitionsTab.classList.remove('tab-active');
                 renderChart();
-            } else { // 'entries'
+            } else if (targetTab === 'entries') {
                 chartView.classList.add('hidden');
+                definitionsView.classList.add('hidden');
                 entriesView.classList.remove('hidden');
                 chartTab.classList.remove('tab-active');
                 entriesTab.classList.add('tab-active');
+                definitionsTab.classList.remove('tab-active');
+            } else if (targetTab === 'definitions') {
+                entriesView.classList.add('hidden');
+                chartView.classList.add('hidden');
+                definitionsView.classList.remove('hidden');
+                chartTab.classList.remove('tab-active');
+                definitionsTab.classList.add('tab-active');
+                entriesTab.classList.remove('tab-active');
             }
         };
 
@@ -331,6 +365,7 @@
         painLevelSlider.addEventListener('input', (e) => painLevelValue.textContent = e.target.value);
         entriesTab.addEventListener('click', () => switchTab('entries'));
         chartTab.addEventListener('click', () => switchTab('chart'));
+        definitionsTab.addEventListener('click', () => switchTab('definitions'));
         entriesList.addEventListener('click', (e) => {
             const deleteButton = e.target.closest('.delete-btn');
             if (deleteButton) deleteEntry(deleteButton.dataset.id);
