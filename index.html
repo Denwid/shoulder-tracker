@@ -157,6 +157,12 @@
         let painChartInstance = null;
         let currentChartPeriod = 'all';
 
+        const testMode = new URLSearchParams(location.search).has('test');
+        const mockEntries = [];
+        let listenForEntries;
+        let saveEntry;
+        let deleteEntry;
+
         // --- DOM Elements ---
         const loginContainer = document.getElementById('login-container');
         const mainContent = document.getElementById('main-content');
@@ -231,37 +237,46 @@
             }
         };
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // User is signed in
-                userId = user.uid;
-                loginContainer.classList.add('hidden');
-                mainContent.classList.remove('hidden');
-                authContainer.classList.remove('hidden');
-                addEntryBtnContainer.classList.remove('hidden');
-                userDisplay.textContent = `${user.displayName || 'User'}`;
-                
-                entriesCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/pain_entries`);
-                listenForEntries();
-            } else {
-                // User is signed out
-                userId = null;
-                loginContainer.classList.remove('hidden');
-                mainContent.classList.add('hidden');
-                authContainer.classList.add('hidden');
-                addEntryBtnContainer.classList.add('hidden');
-                
-                if (unsubscribeEntries) {
-                    unsubscribeEntries();
-                    unsubscribeEntries = null;
+        if (!testMode) {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    // User is signed in
+                    userId = user.uid;
+                    loginContainer.classList.add('hidden');
+                    mainContent.classList.remove('hidden');
+                    authContainer.classList.remove('hidden');
+                    addEntryBtnContainer.classList.remove('hidden');
+                    userDisplay.textContent = `${user.displayName || 'User'}`;
+
+                    entriesCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/pain_entries`);
+                    listenForEntries();
+                } else {
+                    // User is signed out
+                    userId = null;
+                    loginContainer.classList.remove('hidden');
+                    mainContent.classList.add('hidden');
+                    authContainer.classList.add('hidden');
+                    addEntryBtnContainer.classList.add('hidden');
+
+                    if (unsubscribeEntries) {
+                        unsubscribeEntries();
+                        unsubscribeEntries = null;
+                    }
+                    allEntries = [];
+                    renderEntriesList([]);
+                    if (painChartInstance) {
+                        painChartInstance.destroy();
+                    }
                 }
-                allEntries = [];
-                renderEntriesList([]);
-                if (painChartInstance) {
-                    painChartInstance.destroy();
-                }
-            }
-        });
+            });
+        } else {
+            userId = 'test-user';
+            loginContainer.classList.add('hidden');
+            mainContent.classList.remove('hidden');
+            authContainer.classList.add('hidden');
+            addEntryBtnContainer.classList.remove('hidden');
+            listenForEntries();
+        }
 
         // --- Data Rendering (Entries List) ---
         const renderEntriesList = (entries) => {
@@ -328,33 +343,63 @@
             });
         };
 
-        // --- Firestore Logic ---
-        const listenForEntries = () => {
-            if (!entriesCollectionRef) return;
-            if (unsubscribeEntries) unsubscribeEntries();
-            const q = query(entriesCollectionRef);
-            unsubscribeEntries = onSnapshot(q, (snapshot) => {
-                allEntries = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        // --- Data Persistence Logic ---
+        if (testMode) {
+            listenForEntries = () => {
+                allEntries = [...mockEntries];
                 renderEntriesList(allEntries);
                 if (!chartView.classList.contains('hidden')) renderChart();
-            }, (error) => console.error("Firestore listener error:", error));
-        };
-        const saveEntry = async () => {
-            if (!userId || !entriesCollectionRef) return;
-            const newEntry = { painLevel: parseInt(painLevelSlider.value, 10), timestamp: new Date(), userId: userId };
-            try {
-                await addDoc(entriesCollectionRef, newEntry);
+            };
+
+            saveEntry = async () => {
+                const newEntry = {
+                    id: Date.now().toString(),
+                    painLevel: parseInt(painLevelSlider.value, 10),
+                    timestamp: new Date(),
+                    userId
+                };
+                mockEntries.push(newEntry);
                 hideModal();
-            } catch (error) { console.error("Error adding document: ", error); }
-        };
-        const deleteEntry = async (id) => {
-            if (!userId || !entriesCollectionRef) return;
-            if (confirm("Are you sure you want to delete this entry?")) {
+                listenForEntries();
+            };
+
+            deleteEntry = async (id) => {
+                const index = mockEntries.findIndex(e => e.id === id);
+                if (index !== -1) {
+                    mockEntries.splice(index, 1);
+                    listenForEntries();
+                }
+            };
+        } else {
+            listenForEntries = () => {
+                if (!entriesCollectionRef) return;
+                if (unsubscribeEntries) unsubscribeEntries();
+                const q = query(entriesCollectionRef);
+                unsubscribeEntries = onSnapshot(q, (snapshot) => {
+                    allEntries = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    renderEntriesList(allEntries);
+                    if (!chartView.classList.contains('hidden')) renderChart();
+                }, (error) => console.error("Firestore listener error:", error));
+            };
+
+            saveEntry = async () => {
+                if (!userId || !entriesCollectionRef) return;
+                const newEntry = { painLevel: parseInt(painLevelSlider.value, 10), timestamp: new Date(), userId: userId };
                 try {
-                    await deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/pain_entries`, id));
-                } catch (error) { console.error("Error deleting document: ", error); }
-            }
-        };
+                    await addDoc(entriesCollectionRef, newEntry);
+                    hideModal();
+                } catch (error) { console.error("Error adding document: ", error); }
+            };
+
+            deleteEntry = async (id) => {
+                if (!userId || !entriesCollectionRef) return;
+                if (confirm("Are you sure you want to delete this entry?")) {
+                    try {
+                        await deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/pain_entries`, id));
+                    } catch (error) { console.error("Error deleting document: ", error); }
+                }
+            };
+        }
 
         // --- Event Listeners ---
         signInBtn.addEventListener('click', signInWithGoogle);
