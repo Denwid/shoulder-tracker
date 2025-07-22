@@ -10,6 +10,7 @@ A simple, clean, and modern web application to help users track pain levels over
 * **Definitions Tab:** Quick reference explaining each pain level from 0-10.
 * **Cross-Device Sync:** All data is stored in Firestore and linked to the user's Google account, making it available on any phone, tablet, or computer.
 * **Responsive Design:** The interface is built with Tailwind CSS to work seamlessly on all screen sizes.
+* **Testing Mode:** Add `?test` to the URL to bypass authentication and store data only in memory.
 
 ## Tech Stack
 
@@ -63,6 +64,7 @@ To deploy your own instance of this application, follow these steps:
 
 ## How to Use
 
+0.  **Testing Mode:** Append `?test` to the URL to try the app without signing in. Data will reset when the page reloads.
 1.  **Sign In:** Open the application and click the "Sign in with Google" button.
 2.  **Add an Entry:** Click the large "+" button at the bottom right to open the entry modal. Select a pain level and click "Save Entry".
 3.  **View History:** Your entries will appear in a list on the "Entries" tab. You can delete an entry using the trash can icon.
