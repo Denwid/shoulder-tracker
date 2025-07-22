@@ -188,28 +188,28 @@
 
         // --- Tab Switching ---
         const switchTab = (targetTab) => {
+            // An array of all tab buttons and their corresponding views
+            const tabs = [
+                { button: entriesTab, view: entriesView },
+                { button: chartTab, view: chartView },
+                { button: definitionsTab, view: definitionsView }
+            ];
+
+            // Loop through all tabs
+            tabs.forEach(tab => {
+                // Check if the current tab in the loop is the one we want to activate
+                const isActive = tab.button.id === `${targetTab}-tab`;
+
+                // Toggle visibility of the view
+                tab.view.classList.toggle('hidden', !isActive);
+
+                // Toggle the highlight class on the button
+                tab.button.classList.toggle('tab-active', isActive);
+            });
+
+            // Special case for the chart: render it when its tab is made active
             if (targetTab === 'chart') {
-                entriesView.classList.add('hidden');
-                chartView.classList.remove('hidden');
-                definitionsView.classList.add('hidden');
-                entriesTab.classList.remove('tab-active');
-                chartTab.classList.add('tab-active');
-                definitionsTab.classList.remove('tab-active');
                 renderChart();
-            } else if (targetTab === 'entries') {
-                chartView.classList.add('hidden');
-                definitionsView.classList.add('hidden');
-                entriesView.classList.remove('hidden');
-                chartTab.classList.remove('tab-active');
-                entriesTab.classList.add('tab-active');
-                definitionsTab.classList.remove('tab-active');
-            } else if (targetTab === 'definitions') {
-                entriesView.classList.add('hidden');
-                chartView.classList.add('hidden');
-                definitionsView.classList.remove('hidden');
-                chartTab.classList.remove('tab-active');
-                definitionsTab.classList.add('tab-active');
-                entriesTab.classList.remove('tab-active');
             }
         };
 
