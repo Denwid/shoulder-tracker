@@ -103,6 +103,10 @@
                 <label for="pain-level" class="block text-lg font-medium mb-2">Pain Level: <span id="pain-level-value" class="font-bold text-blue-600 dark:text-blue-400">5</span>/10</label>
                 <input id="pain-level" type="range" min="0" max="10" value="5" class="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer">
             </div>
+            <div class="mb-6">
+                <label for="entry-datetime" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Date and Time</label>
+                <input type="datetime-local" id="entry-datetime" name="entry-datetime" class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            </div>
             <div class="flex justify-end space-x-4">
                 <button id="cancel-btn" class="px-6 py-2 rounded-lg text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors">Cancel</button>
                 <button id="save-btn" class="px-6 py-2 rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors">Save Entry</button>
