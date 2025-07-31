@@ -47,6 +47,7 @@ const definitionsView = document.getElementById('definitions-view');
 const chartCanvas = document.getElementById('painChart');
 const chartEmptyState = document.getElementById('chart-empty-state');
 const timeFilterButtons = document.querySelectorAll('.time-filter-btn');
+const exportCsvBtn = document.getElementById('export-csv-btn');
 
 // --- Modal Logic ---
 const showModal = () => entryModal.classList.replace('modal-hidden', 'modal-visible');
@@ -222,7 +223,41 @@ const deleteEntry = async (id) => {
     }
 };
 
+// --- Data Export ---
+const exportDataToCSV = () => {
+    if (allEntries.length === 0) {
+        alert("No data to export.");
+        return;
+    }
+
+    // Sort entries chronologically
+    const sortedEntries = [...allEntries].sort((a, b) => a.timestamp.toMillis() - b.timestamp.toMillis());
+
+    // CSV Header
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += "Timestamp,Pain Level\r\n";
+
+    // CSV Rows
+    sortedEntries.forEach(entry => {
+        const date = entry.timestamp.toDate();
+        // Format to ISO 8601 for universal compatibility
+        const formattedTimestamp = date.toISOString();
+        const row = `${formattedTimestamp},${entry.painLevel}`;
+        csvContent += row + "\r\n";
+    });
+
+    // Create a link and trigger the download
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "pain_entries.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+};
+
 // --- Event Listeners ---
+exportCsvBtn.addEventListener('click', exportDataToCSV);
 signInBtn.addEventListener('click', signInWithGoogle);
 signOutBtn.addEventListener('click', signOutUser);
 addEntryBtn.addEventListener('click', showModal);
