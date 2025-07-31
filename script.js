@@ -47,10 +47,22 @@ const definitionsView = document.getElementById('definitions-view');
 const chartCanvas = document.getElementById('painChart');
 const chartEmptyState = document.getElementById('chart-empty-state');
 const timeFilterButtons = document.querySelectorAll('.time-filter-btn');
+const entryDatetimeInput = document.getElementById('entry-datetime');
 const exportCsvBtn = document.getElementById('export-csv-btn');
 
 // --- Modal Logic ---
-const showModal = () => entryModal.classList.replace('modal-hidden', 'modal-visible');
+const showModal = () => {
+    // Format current date and time for the datetime-local input
+    // The value needs to be in 'YYYY-MM-DDTHH:mm' format
+    const now = new Date();
+    // Adjust for local timezone
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    // Convert to ISO string and take the first 16 characters
+    const localDateTime = now.toISOString().slice(0, 16);
+    entryDatetimeInput.value = localDateTime;
+
+    entryModal.classList.replace('modal-hidden', 'modal-visible');
+};
 const hideModal = () => entryModal.classList.replace('modal-visible', 'modal-hidden');
 
 // --- Tab Switching ---
@@ -208,11 +220,22 @@ const listenForEntries = () => {
 };
 const saveEntry = async () => {
     if (!userId || !entriesCollectionRef) return;
-    const newEntry = { painLevel: parseInt(painLevelSlider.value, 10), timestamp: new Date(), userId: userId };
+
+    // Get the timestamp from the input. Fallback to now if it's empty.
+    const timestampValue = entryDatetimeInput.value ? new Date(entryDatetimeInput.value) : new Date();
+
+    const newEntry = {
+        painLevel: parseInt(painLevelSlider.value, 10),
+        timestamp: timestampValue,
+        userId: userId
+    };
+
     try {
         await addDoc(entriesCollectionRef, newEntry);
         hideModal();
-    } catch (error) { console.error("Error adding document: ", error); }
+    } catch (error) {
+        console.error("Error adding document: ", error);
+    }
 };
 const deleteEntry = async (id) => {
     if (!userId || !entriesCollectionRef) return;
