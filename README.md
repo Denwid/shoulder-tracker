@@ -7,6 +7,7 @@ A simple, clean, and modern web application to help users track pain levels over
 * **Secure Authentication:** Users can sign in with their Google account, ensuring data is private and accessible across devices.
 * **Pain Entry:** A simple interface to add a new pain entry with a level from 0-10, automatically timestamped.
 * **Data Visualization:** A line chart visualizes pain levels over time, with filters to view data from the last 7 days, 30 days, or all time.
+* **Data Export:** Export all your pain entries to a CSV file for personal archiving or analysis in other tools.
 * **Definitions Tab:** Quick reference explaining each pain level from 0-10.
 * **Cross-Device Sync:** All data is stored in Firestore and linked to the user's Google account, making it available on any phone, tablet, or computer.
 * **Responsive Design:** The interface is built with Tailwind CSS to work seamlessly on all screen sizes.
