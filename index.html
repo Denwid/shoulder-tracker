@@ -9,6 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="pain-map.css">
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
 
@@ -41,6 +42,7 @@
                     <nav class="-mb-px flex space-x-6" aria-label="Tabs">
                         <button id="entries-tab" class="tab-btn px-3 py-2 text-sm font-medium rounded-t-md text-gray-600 dark:text-gray-300 border-b-2 border-transparent bg-white dark:bg-gray-800 tab-active">Entries</button>
                         <button id="chart-tab" class="tab-btn px-3 py-2 text-sm font-medium rounded-t-md text-gray-600 dark:text-gray-300 border-b-2 border-transparent bg-white dark:bg-gray-800">Chart</button>
+                        <button id="pain-map-tab" class="tab-btn px-3 py-2 text-sm font-medium rounded-t-md text-gray-600 dark:text-gray-300 border-b-2 border-transparent bg-white dark:bg-gray-800">Pain Map</button>
                         <button id="definitions-tab" class="tab-btn px-3 py-2 text-sm font-medium rounded-t-md text-gray-600 dark:text-gray-300 border-b-2 border-transparent bg-white dark:bg-gray-800">Definitions</button>
                     </nav>
                 </div>
@@ -92,6 +94,34 @@
                         </ul>
                     </div>
                 </div>
+
+                <!-- Pain Map View -->
+                <div id="pain-map-view" class="hidden">
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+                        <div class="flex flex-col md:flex-row gap-8">
+                            <!-- Left side: Image -->
+                            <div class="md:w-1/2">
+                                <h2 class="text-xl font-bold mb-4 text-blue-600 dark:text-blue-400">Pain Map</h2>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Click on the dots to select a pain location and set a pain level.</p>
+                                <div id="pain-map-image-container" class="relative w-full max-w-sm mx-auto">
+                                    <img src="images/upper-body-posterior-view.png" alt="Outline of a person's back and shoulders" class="w-full h-auto rounded-md bg-gray-200 dark:bg-gray-700">
+                                    <!-- Pain points will be injected here by pain-map.js -->
+                                </div>
+                            </div>
+                            <!-- Right side: List and controls -->
+                            <div class="md:w-1/2">
+                                <h3 class="text-lg font-semibold mb-4">Selected Locations</h3>
+                                <div id="pain-locations-list" class="space-y-3 mb-6">
+                                    <!-- Selected locations will be listed here by pain-map.js -->
+                                    <p class="text-gray-500 dark:text-gray-400">No locations selected yet.</p>
+                                </div>
+                                <div class="flex justify-end">
+                                    <button id="save-pain-map-btn" class="px-6 py-2 rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors">Save Pain Map</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </main>
         </div>
     </div>
@@ -123,5 +153,6 @@
     </div>
 
     <script src="script.js" type="module"></script>
+    <script src="pain-map.js" type="module"></script>
 </body>
 </html>
