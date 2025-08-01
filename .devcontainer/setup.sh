@@ -8,7 +8,9 @@ echo "🚀 Starting Codespace setup..."
 # --- Install Core Dependencies ---
 echo "📦 Installing core packages (curl, npm, git-lfs)..."
 sudo apt-get update
-sudo apt-get install -y curl npm git-lfs
+sudo apt-get install -y curl git-lfs
+sudo apt-get install -y nodejs npm
+
 
 # --- Install ngrok ---
 echo "📦 Installing ngrok..."
