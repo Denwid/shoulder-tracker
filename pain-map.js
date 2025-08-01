@@ -1,4 +1,4 @@
-import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { collection, addDoc, serverTimestamp, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 import { db, auth } from './script.js';
 import { painLocations } from './pain-locations.js';
@@ -6,12 +6,23 @@ import { painLocations } from './pain-locations.js';
 const painMapImageContainer = document.getElementById('pain-map-image-container');
 const painLocationsList = document.getElementById('pain-locations-list');
 const savePainMapBtn = document.getElementById('save-pain-map-btn');
+const painMapHistoryList = document.getElementById('pain-map-history-list');
 
 let currentUserId = null;
 let selectedLocations = {}; // Use an object for easier lookup
+let unsubscribePainMapHistory = null;
 
 onAuthStateChanged(auth, (user) => {
     currentUserId = user ? user.uid : null;
+    if (currentUserId) {
+        listenForPainMapHistory();
+    } else {
+        if (unsubscribePainMapHistory) {
+            unsubscribePainMapHistory();
+            unsubscribePainMapHistory = null;
+        }
+        renderPainMapHistory([]);
+    }
 });
 
 const renderPainPoints = () => {
@@ -116,6 +127,55 @@ const savePainMap = async () => {
         alert("Failed to save pain map. Please try again.");
     }
 };
+
+const listenForPainMapHistory = () => {
+    if (!currentUserId || !painMapHistoryList) return;
+    if (unsubscribePainMapHistory) unsubscribePainMapHistory();
+
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'shoulder-pain-tracker';
+    const painMapsCollectionRef = collection(db, `artifacts/${appId}/users/${currentUserId}/pain_maps`);
+    const q = query(painMapsCollectionRef, orderBy('timestamp', 'desc'));
+
+    unsubscribePainMapHistory = onSnapshot(q, (snapshot) => {
+        const history = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderPainMapHistory(history);
+    }, (error) => {
+        console.error("Firestore pain map history listener error:", error);
+    });
+};
+
+const renderPainMapHistory = (entries) => {
+    if (!painMapHistoryList) return;
+    painMapHistoryList.innerHTML = '';
+
+    if (entries.length === 0) {
+        painMapHistoryList.innerHTML = `<div class="text-center py-6"><p class="text-gray-500 dark:text-gray-400">No pain map history found.</p></div>`;
+        return;
+    }
+
+    entries.forEach(entry => {
+        const entryEl = document.createElement('div');
+        entryEl.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-md p-4';
+        const date = entry.timestamp.toDate();
+        const formattedDate = date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+        const formattedTime = date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+
+        let locationsHtml = '<ul class="mt-2 space-y-1">';
+        entry.locations.forEach(loc => {
+            locationsHtml += `<li class="text-sm text-gray-600 dark:text-gray-300"><span class="font-semibold">${loc.name}:</span> ${loc.painLevel}/10</li>`;
+        });
+        locationsHtml += '</ul>';
+
+        entryEl.innerHTML = `
+            <div>
+                <p class="font-bold text-lg text-blue-600 dark:text-blue-400">${formattedDate} at ${formattedTime}</p>
+                ${locationsHtml}
+            </div>
+        `;
+        painMapHistoryList.appendChild(entryEl);
+    });
+};
+
 
 // --- Initialization ---
 // This runs when the script is loaded.
