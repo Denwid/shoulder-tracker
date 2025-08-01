@@ -13,8 +13,8 @@ const firebaseConfig = {
 };
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'shoulder-pain-tracker';
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+export const auth = getAuth(app);
+export const db = getFirestore(app);
 
 let userId = null;
 let entriesCollectionRef = null;
@@ -41,9 +41,11 @@ const entriesList = document.getElementById('entries-list');
 const entriesTab = document.getElementById('entries-tab');
 const chartTab = document.getElementById('chart-tab');
 const definitionsTab = document.getElementById('definitions-tab');
+const painMapTab = document.getElementById('pain-map-tab');
 const entriesView = document.getElementById('entries-view');
 const chartView = document.getElementById('chart-view');
 const definitionsView = document.getElementById('definitions-view');
+const painMapView = document.getElementById('pain-map-view');
 const chartCanvas = document.getElementById('painChart');
 const chartEmptyState = document.getElementById('chart-empty-state');
 const timeFilterButtons = document.querySelectorAll('.time-filter-btn');
@@ -71,7 +73,8 @@ const switchTab = (targetTab) => {
     const tabs = [
         { button: entriesTab, view: entriesView },
         { button: chartTab, view: chartView },
-        { button: definitionsTab, view: definitionsView }
+        { button: definitionsTab, view: definitionsView },
+        { button: painMapTab, view: painMapView }
     ];
 
     // Loop through all tabs
@@ -290,6 +293,7 @@ painLevelSlider.addEventListener('input', (e) => painLevelValue.textContent = e.
 entriesTab.addEventListener('click', () => switchTab('entries'));
 chartTab.addEventListener('click', () => switchTab('chart'));
 definitionsTab.addEventListener('click', () => switchTab('definitions'));
+painMapTab.addEventListener('click', () => switchTab('pain-map'));
 entriesList.addEventListener('click', (e) => {
     const deleteButton = e.target.closest('.delete-btn');
     if (deleteButton) deleteEntry(deleteButton.dataset.id);
