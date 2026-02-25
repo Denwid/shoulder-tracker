@@ -107,9 +107,22 @@
     <div id="entry-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 modal-hidden">
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 sm:p-8 w-full max-w-md">
             <h2 class="text-2xl font-bold mb-6 text-center">New Pain Entry</h2>
-            <div class="mb-6">
-                <label for="pain-level" class="block text-lg font-medium mb-2">Pain Level: <span id="pain-level-value" class="font-bold text-blue-600 dark:text-blue-400">5</span>/10</label>
-                <input id="pain-level" type="range" min="0" max="10" value="5" class="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer">
+            <div class="mb-6" id="pain-level-selector">
+                <label class="block text-lg font-medium mb-4 text-center">Pain Level: <span id="pain-level-value" class="font-bold text-blue-600 dark:text-blue-400">5</span>/10</label>
+
+                <div class="flex justify-center gap-4 mb-4">
+                    <button type="button" class="pain-btn w-16 h-16 rounded-full text-xl font-bold bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500" data-value="3">3</button>
+                    <button type="button" class="pain-btn w-16 h-16 rounded-full text-xl font-bold bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500" data-value="4">4</button>
+                    <button type="button" class="pain-btn w-16 h-16 rounded-full text-xl font-bold bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500" data-value="5">5</button>
+                </div>
+
+                <div class="flex justify-center gap-3">
+                    <button type="button" class="pain-btn w-10 h-10 rounded-full text-sm font-medium bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500" data-value="0">0</button>
+                    <button type="button" class="pain-btn w-10 h-10 rounded-full text-sm font-medium bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500" data-value="1">1</button>
+                    <button type="button" class="pain-btn w-10 h-10 rounded-full text-sm font-medium bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500" data-value="2">2</button>
+                    <button type="button" class="pain-btn w-10 h-10 rounded-full text-sm font-medium bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500" data-value="6">6</button>
+                    <button type="button" class="pain-btn w-10 h-10 rounded-full text-sm font-medium bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500" data-value="7">7</button>
+                </div>
             </div>
             <div class="mb-6">
                 <label for="entry-datetime" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Date and Time</label>
