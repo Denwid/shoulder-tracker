@@ -22,6 +22,7 @@ let unsubscribeEntries = null;
 let allEntries = [];
 let painChartInstance = null;
 let currentChartPeriod = 'all';
+let currentPainLevel = 5;
 
 // --- DOM Elements ---
 const loginContainer = document.getElementById('login-container');
@@ -35,8 +36,8 @@ const addEntryBtn = document.getElementById('add-entry-btn');
 const entryModal = document.getElementById('entry-modal');
 const saveBtn = document.getElementById('save-btn');
 const cancelBtn = document.getElementById('cancel-btn');
-const painLevelSlider = document.getElementById('pain-level');
 const painLevelValue = document.getElementById('pain-level-value');
+const painLevelButtons = document.querySelectorAll('.pain-btn');
 const entriesList = document.getElementById('entries-list');
 const entriesTab = document.getElementById('entries-tab');
 const chartTab = document.getElementById('chart-tab');
@@ -51,6 +52,22 @@ const entryDatetimeInput = document.getElementById('entry-datetime');
 const exportCsvBtn = document.getElementById('export-csv-btn');
 
 // --- Modal Logic ---
+const updatePainLevel = (value) => {
+    currentPainLevel = parseInt(value, 10);
+    painLevelValue.textContent = currentPainLevel;
+
+    painLevelButtons.forEach(btn => {
+        const btnValue = parseInt(btn.dataset.value, 10);
+        if (btnValue === currentPainLevel) {
+            btn.classList.add('bg-blue-600', 'text-white', 'hover:bg-blue-700', 'dark:hover:bg-blue-700');
+            btn.classList.remove('bg-gray-200', 'dark:bg-gray-700', 'hover:bg-gray-300', 'dark:hover:bg-gray-600');
+        } else {
+            btn.classList.remove('bg-blue-600', 'text-white', 'hover:bg-blue-700', 'dark:hover:bg-blue-700');
+            btn.classList.add('bg-gray-200', 'dark:bg-gray-700', 'hover:bg-gray-300', 'dark:hover:bg-gray-600');
+        }
+    });
+};
+
 const showModal = () => {
     // Format current date and time for the datetime-local input
     // The value needs to be in 'YYYY-MM-DDTHH:mm' format
@@ -61,6 +78,7 @@ const showModal = () => {
     const localDateTime = now.toISOString().slice(0, 16);
     entryDatetimeInput.value = localDateTime;
 
+    updatePainLevel(5);
     entryModal.classList.replace('modal-hidden', 'modal-visible');
 };
 const hideModal = () => entryModal.classList.replace('modal-visible', 'modal-hidden');
@@ -225,7 +243,7 @@ const saveEntry = async () => {
     const timestampValue = entryDatetimeInput.value ? new Date(entryDatetimeInput.value) : new Date();
 
     const newEntry = {
-        painLevel: parseInt(painLevelSlider.value, 10),
+        painLevel: currentPainLevel,
         timestamp: timestampValue,
         userId: userId
     };
@@ -286,7 +304,13 @@ signOutBtn.addEventListener('click', signOutUser);
 addEntryBtn.addEventListener('click', showModal);
 cancelBtn.addEventListener('click', hideModal);
 saveBtn.addEventListener('click', saveEntry);
-painLevelSlider.addEventListener('input', (e) => painLevelValue.textContent = e.target.value);
+
+painLevelButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        updatePainLevel(btn.dataset.value);
+    });
+});
+
 entriesTab.addEventListener('click', () => switchTab('entries'));
 chartTab.addEventListener('click', () => switchTab('chart'));
 definitionsTab.addEventListener('click', () => switchTab('definitions'));
