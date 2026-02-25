@@ -18,3 +18,35 @@ body {
     color: #3b82f6; /* blue-500 */
     background-color: rgba(59, 130, 246, 0.1);
 }
+
+/* Notifications */
+.notification {
+    padding: 1rem 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    color: white;
+    font-weight: 500;
+    max-width: 20rem;
+    animation: slideIn 0.3s ease-out;
+    pointer-events: auto;
+}
+.notification-error {
+    background-color: #ef4444; /* red-500 */
+}
+.notification-success {
+    background-color: #10b981; /* emerald-500 */
+}
+.notification-fade-out {
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+}
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}

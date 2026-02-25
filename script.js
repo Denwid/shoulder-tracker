@@ -99,6 +99,7 @@ const signInWithGoogle = async () => {
         await signInWithPopup(auth, provider);
     } catch (error) {
         console.error("Error during Google sign-in:", error);
+        showNotification("Failed to sign in. Please try again.");
     }
 };
 
@@ -107,7 +108,25 @@ const signOutUser = async () => {
         await signOut(auth);
     } catch (error) {
         console.error("Error during sign-out:", error);
+        showNotification("Failed to sign out.");
     }
+};
+
+const showNotification = (message, type = 'error') => {
+    const container = document.getElementById('notification-container');
+    if (!container) return;
+
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.textContent = message;
+
+    container.appendChild(notification);
+
+    // Remove notification after 5 seconds
+    setTimeout(() => {
+        notification.classList.add('notification-fade-out');
+        setTimeout(() => notification.remove(), 500);
+    }, 5000);
 };
 
 onAuthStateChanged(auth, (user) => {
@@ -216,7 +235,10 @@ const listenForEntries = () => {
         allEntries = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         renderEntriesList(allEntries);
         if (!chartView.classList.contains('hidden')) renderChart();
-    }, (error) => console.error("Firestore listener error:", error));
+    }, (error) => {
+        console.error("Firestore listener error:", error);
+        showNotification("Error loading data.");
+    });
 };
 const saveEntry = async () => {
     if (!userId || !entriesCollectionRef) return;
@@ -235,6 +257,7 @@ const saveEntry = async () => {
         hideModal();
     } catch (error) {
         console.error("Error adding document: ", error);
+        showNotification("Failed to save entry.");
     }
 };
 const deleteEntry = async (id) => {
@@ -242,7 +265,10 @@ const deleteEntry = async (id) => {
     if (confirm("Are you sure you want to delete this entry?")) {
         try {
             await deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/pain_entries`, id));
-        } catch (error) { console.error("Error deleting document: ", error); }
+        } catch (error) {
+            console.error("Error deleting document: ", error);
+            showNotification("Failed to delete entry.");
+        }
     }
 };
 
